@@ -172,6 +172,7 @@ int main (int argv, char **argc) {
 	double upper_IMF_limit = 150.0; //Maximum stellar mass allowed in McLuster [Msun]
 	int an[10] = {0,0,0,0,0,0,0,0,0,0};						//Counter for number of alpha slopes for mfunc = 2
 	int mn[10] = {0,0,0,0,0,0,0,0,0,0};						//Counter for number of mass limits for mfunc = 1, 2 & 4
+	
 	//SSE internal parameters (see Hurley, Pols & Tout 2000) 
 	value1_.neta = 0.5;			//Reimers mass-loss coefficent (neta*4x10^-13; 0.5 normally)
 	value1_.bwind = 0.0;		//Binary enhanced mass loss parameter (inactive for single)
@@ -808,7 +809,6 @@ int main (int argv, char **argc) {
 		free(Mcum);
 	} //END CICLE FOR GENERATE POSITION FOR MULTIPLE POPULATIONS
 
-
 // Generate binaries properties
 	if (seed) srand48(seed);
 
@@ -1081,9 +1081,7 @@ int main (int argv, char **argc) {
 			cmr[k] += (star[j][0]/Mtotal)*star[j][k];
 		}
 	}
-	for (k=1;k<7;k++){
-//			printf("Centre of mass correction %i %f\n", k,cmr[k]);
-		}
+
 	for (j=0; j<Ntot; j++) {
 		for (k=1;k<7;k++){
 			star[j][k] -= cmr[k];
@@ -1464,7 +1462,9 @@ int main (int argv, char **argc) {
 		fclose(sinmocca);
 		fclose(binmocca);
 		printf("\nData written to single_nbody.dat and binary_nbody.dat\n");
-	} else if(outputfor == 1 || outputfor == 2) {
+	} 
+
+	if(outputfor == 1 || outputfor == 2) {
 		//scale masses, pos & vel to astrophysical units or Nbody units
 /*		tscale = sqrt(rvir*rvir*rvir/(G*Mtotal)); // to be consistent with old M
 
