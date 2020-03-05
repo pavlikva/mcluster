@@ -815,7 +815,7 @@ int main (int argv, char **argc) {
 	printf("\n\n-----GENERATE BINARIES PROPERITES-----   \n"); 
 	for (i=0;i<numberofpop;i++){
 	
-		N[i] += nbin[i];
+		//N[i] += nbin[i];
 //used to change the correct star array; star_array will be constructed as: Nbinaries_1_gen, Nsingle_1_gen, Nbinaries_2_gen, Nsingle_2_gen, ..
 		if (i == 0){
 			Nsub = 0;
@@ -828,7 +828,8 @@ int main (int argv, char **argc) {
 			printf("\nNo primordial binaries for population number %i!\n",i+1);
 		} else {
 
-			printf("\nCreating %i primordial binary systems, fraction: %6.2f percent for population number %i.\n", nbin[i], 2.0*nbin[i]/N[i]*100.0,i+1);
+//			printf("\nCreating %i primordial binary systems, fraction: %6.2f percent for population number %i.\n", nbin[i], 1.0*nbin[i]/(N[i]-nbin[i])*100.0,i+1);
+			printf("\nCreating %i primordial binary systems, fraction: %6.2f percent for population number %i.\n", nbin[i], 1.0*nbin[i]/N[i]*100.0,i+1);
 
 			//change pairing, adis and OBperiods for eigenevolution
 			if( (adis[i] == 3) && (eigen[i] == 0) ) {
