@@ -41,7 +41,7 @@
  * to include scaling in N-body units assuming spherical symmetry, new     *
  * eigenevolutoin for initial binary proprieties (D. Belloni et al., 2017, *
  * MNRAS, 471, 2812) and multiple stellar population                       *
- * 									   *
+ *                                                                         *
  * Multiple stellar population prosiger: generation of different stellar   *
  * populations separately; solving Jeans equation to obtain velocities for *
  * dynamical equilibrium (acknowledge to J. Hong); COM corrections and     *
@@ -827,7 +827,6 @@ int main (int argv, char **argc) {
 		if (!nbin[i]) {
 			printf("\nNo primordial binaries for population number %i!\n",i+1);
 		} else {
-
 //			printf("\nCreating %i primordial binary systems, fraction: %6.2f percent for population number %i.\n", nbin[i], 1.0*nbin[i]/(N[i]-nbin[i])*100.0,i+1);
 			printf("\nCreating %i primordial binary systems, fraction: %6.2f percent for population number %i.\n", nbin[i], 1.0*nbin[i]/N[i]*100.0,i+1);
 
@@ -875,6 +874,7 @@ int main (int argv, char **argc) {
 			get_binaries(nbin[i], mbin, M[i], pairing[i], N[i], adis[i], amin[i], amax[i], rh_mcl, Ntot, eigen[i], BSE, epoch[i], Z[i], remnant, OBperiods[i], msort[i], Nsub, Nbinsub,eccbinaries, abinaries);
 			
 			if (eigen[i]) {
+				N[i] += nbin[i];
 				double **mbin_index; //sort mbin by identifier
 				mbin_index = (double **)calloc(nbin[i],sizeof(double *));
 				for (j=0;j<nbin[i];j++){
