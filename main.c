@@ -644,25 +644,16 @@ int main (int argv, char **argc) {
 		} else if (profile[i] == 3) {
 			N[i] = Nunseg;
 			printf("\nGenerating segregated Subr model with parameters: N = %i\t S = %g\t\n",N[i], S[i]);
-			if(tf==1){
+			double perc = Mtotal/M[0];
+			if(tf == 1) {
 				if(rh_mcl >= 1.0E9){
 					rvir = (0.1*rtide)/0.772764;
 				} else {
-					if(i==0){
-						double perc = Mtotal/M[i];
-						rvir = (perc)*(rh_mcl)/0.772764;
-					} else {
-						rvir = rh_mcl/0.772764;
-					} 
+					rvir = (perc)*(rh_mcl)/0.772764;
 				}
 			} else {
-				if(i==0){
-					double perc = Mtotal/M[i];
-					rvir = (perc)*(rh_mcl)/0.772764;
-				} else {
-					rvir = rh_mcl/0.772764;
-				}
-			}
+				rvir = (perc)*(rh_mcl)/0.772764;
+			}																																						//
 			//rvir[i] = Rh[i]/0.76857063065978; //(value provided by L. Subr) 
 			generate_subr(N[i], S[i], star, rtide, rvir, Nsub);
 //			printf ("\nrvir = %.5f\t rtide = %.5f (pc)\n", rvir, rtide);
@@ -680,45 +671,27 @@ int main (int argv, char **argc) {
 		} else if (profile[i] == 0) {
 			printf("\nGenerating fractal distribution with parameters: N = %i\t D = %.2f\n", N[i], D[i]);
 			fractalize(D[i], N[i], star, 0, symmetry, Nsub);
-			if(tf==1){
-				if(rh_mcl >= 1.0E9){
-					rvir = (0.1*rtide)/0.772764;
+                        double perc = Mtotal/M[0];
+			if(tf == 1) {
+                        	if(rh_mcl >= 1.0E9){
+                        		rvir = (0.1*rtide)/0.772764;
 				} else {
-					if(i==0){
-						double perc = Mtotal/M[i];
-						rvir = (perc)*(rh_mcl)/0.772764;
-					} else {
-						rvir = rh_mcl/0.772764;
-					} 
-				}
-			} else {
-				if(i==0){
-						double perc = Mtotal/M[i];
 					rvir = (perc)*(rh_mcl)/0.772764;
-					} else {
-					rvir = rh_mcl/0.772764;
-			}
-			}
+				}
+			} else { 
+                                rvir = (perc)*(rh_mcl)/0.772764;
+                        }    
 		} else if (profile[i] == 1) {
 			printf(" Generating Plummer model with parameters: N = %i\t D = %.2f\n", N[i], D[i]);
+			double perc = Mtotal/M[0];
 			if(tf == 1) {
 				if(rh_mcl >= 1.0E9){
 					rvir = (0.1*rtide)/0.772764;
 				} else {
-					if(i==0){
-						double perc = Mtotal/M[i];
-						rvir = (perc)*(rh_mcl)/0.772764;
-					} else {
-						rvir = rh_mcl/0.772764;
-					} 
+					rvir = (perc)*(rh_mcl)/0.772764;
 				}
 			} else {
-				if(i==0){
-					double perc = Mtotal/M[i];
-					rvir = (perc)*(rh_mcl)/0.772764;
-				} else {
-					rvir = rh_mcl/0.772764; // for no tidal field rplum = Rh
-				}
+				rvir = (perc)*(rh_mcl)/0.772764;
 			}
 			generate_plummer(N[i], star, rtide, rvir, D[i], symmetry, Qtot, Nsub, rho_dens[i], cc, M[i], Mtotal);
 		}
