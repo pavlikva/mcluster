@@ -113,7 +113,8 @@
       call config_getstr(fractalchar, "3.0", key, conf);
       call char_to_arraydouble(fractalchar, fractal);
       do i = 1, numpop
-       if (fractal(i).lt.1.6d0.OR.fractal(i).gt.3.0d0) then
+       if (abs(fractal(i)).lt.1.6d0.OR.
+     &     abs(fractal(i)).gt.3.0d0) then
       print*,"ERROR Mcluster:fractal ",i,"th",
      &   " is wrong. It should be between 1.6 and 3.0"
          stop
@@ -212,7 +213,7 @@
       call char_to_arraydouble(zinichar, zini_pop);
       do i = 1, numpop
           if (zini_pop(i).le.0.0d0) then
-            print*,"ERROR StarCluster:zini ",i,"-th",
+            print*,"ERROR Mcluster:zini ",i,"-th",
      &        " is wrong.  It should be > 0.0"
               stop
        endif
@@ -227,6 +228,14 @@
 
       key = "Mcluster:check_en"
       call config_getint(check_en, 1, key, conf);
+
+      key = "Mcluster:BSE"
+      call config_getint(BSE, 0, key, conf);
+      if (BSE.eq.1.AND.(outputf.eq.0.OR.outputf.eq.2)) then
+            print*,"ERROR input for MOCCA cannot be evolved",
+     &        ". Please set BSE to 0 or change output "
+              stop
+       endif
 
 *
       return
