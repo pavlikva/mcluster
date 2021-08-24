@@ -4080,15 +4080,13 @@ double fractalize_spherical(double D, int N, double **star, int radial, int symm
 	double st_r, st_phi, st_theta;
 	
 	if (radial) scatter = 0.01;
-	else scatter = 0.1;//0.5
-	// printf("\n I am changing the code..\n\n\n\n\n");
+	else scatter = 0.1;
 	double vx, vy, vz;
 	double vscale;
 	int subi;
 	double morescatter = 0.1; //0.1 looks good
 	
 	printf("\nFractalizing initial conditions...\n\n");
-	printf("\nFractalizing NEW ICS...\n\n");
 	
 	double **star_temp;   //temporary array for fractalized structure
 	star_temp = (double **)calloc(Ntot,sizeof(double *));
@@ -4100,6 +4098,8 @@ double fractalize_spherical(double D, int N, double **star, int radial, int symm
 		}
 	}		
 	int randi=0;
+	int northsouth=1;
+	double theta_gen=0;
 	
 	Nparent = 0; //ur-star
 	Nparentlow = Nparent;
@@ -4118,25 +4118,69 @@ double fractalize_spherical(double D, int N, double **star, int radial, int symm
 		for (;Nparentlow<Nparent;Nparentlow++) {
 			subi = 0;
 			randi = 0;
+			northsouth=1;
 			
-			for(;randi<8;randi++)
+			for (;randi<8;randi++)
 			{
 				if ((drand48()<prob && Nparent+i<Ntot) || (Nparent == 1)) 
 				{
 					star_temp[Nparent+i][0] = 1.0;
 					do
 					{
-						st_r=l/2.0+l*scatter*get_gauss();
-						//generate gaussian l/2 away from parent node, but if r<0, then regenerate
-						//a negative r is the same as a small r in the other direction.
+						st_r=l/2.0+l*scatter*get_gauss();	
 					} while (st_r<0);
 					
-					st_r=pow(3*st_r*st_r,0.5); //scale by sqrt(3) to match distance scaling with cube of size r
-					//generate uniform random direction
-					st_phi=drand48()*TWOPI; 
+					//Replication of non-forced symmetry generation
+					//Generate r from gaussian
+					//Generate phi and theta to create a uniform bubble of distance sq(3*l/2)
+					st_r=pow(3*st_r*st_r,0.5);
+					st_phi=drand48()*TWOPI;
 					st_theta=acos(drand48()*2-1);
 					
-					//shift calculated distance shift from spherical coordinates to cartesian and add to parent
+					//Box-like
+					//This seeks to replicate the symmetry forcing of previous version
+						//as well as the strength of the symmetry forcing
+					//Each of the first 8 points are generated from gaussians 
+						//which are centered at (+-l/2,+-l/2,+-l/2)
+					//This code generates the gaussians in spherical coordinates
+					if (Nparent==1 && symmetry)
+					{
+						st_phi=PI*0.25 + PI*0.5*randi + 0.5*PI*scatter*get_gauss();
+						if(randi==4) northsouth=-1;
+						theta_gen=northsouth * cos(PI*0.25) + (1-cos(PI*0.25))*2*scatter*get_gauss();
+						
+						//if theta_gen is outside of -1, 1, acos() will fail.
+						//This point is still kept, but we must correct our coordinates
+						//This is done by correcting the cosine value to within -1 to 1
+						//We must move the point by pi in the polar angle each time
+						
+						//Example would be if we generate 1.1, this is the same as a 
+							//particle at 0.9 with phi= phi +pi
+						//With default scatter this is VERY rarely called
+						while (theta_gen<-1 || theta_gen>1)
+						{
+							if (theta_gen<-1)	theta_gen=-2-theta_gen;
+							else theta_gen=2-theta_gen;
+							
+							st_phi=st_phi+PI;
+						}
+						st_theta=acos(theta_gen);
+					}
+					//Uniform
+					//Alternate form of 'symmetric' generation
+					//Clusters are forced into each octant
+					//But angles are isotropically (uniformly) generated within each octant
+					/*
+					if (Nparent==1 && symmetry)
+					{
+						st_phi=0.5*PI*drand48()+PI*0.5*randi;
+						if (randi>3) st_theta=acos(drand48());
+						else st_theta=acos(-1*drand48());
+					}
+					*/ 
+					
+					
+					//Convert created spherical coord seperations into cartesian coords
 					star_temp[Nparent+i][1] = star_temp[Nparentlow][1]+st_r*sin(st_theta)*cos(st_phi);
 					star_temp[Nparent+i][2] = star_temp[Nparentlow][2]+st_r*sin(st_theta)*sin(st_phi);
 					star_temp[Nparent+i][3] = star_temp[Nparentlow][3]+st_r*cos(st_theta);
@@ -4149,40 +4193,10 @@ double fractalize_spherical(double D, int N, double **star, int radial, int symm
 					star_temp[Nparent+i][6] = vz;
 					i++;
 					subi++;
-					//to match generating parents based on the same probability as the cartesian version, loop this 8 times per parent
-					
 				}			
 			}
-			/*if (drand48()<prob && Nparent+i<Ntot) {
-				star_temp[Nparent+i][0] = 1.0;
-				star_temp[Nparent+i][1] = star_temp[Nparentlow][1]+l*scatter*get_gauss();
-				star_temp[Nparent+i][2] = star_temp[Nparentlow][2]+l*scatter*get_gauss();
-				star_temp[Nparent+i][3] = star_temp[Nparentlow][3]+l*scatter*get_gauss();
-				v = get_gauss();
-				vz = (1.0 - 2.0*drand48())*v;
-				vx = sqrt(v*v - vz*vz)*cos(TWOPI*drand48());
-				vy = sqrt(v*v - vz*vz)*sin(TWOPI*drand48());
-				star_temp[Nparent+i][4] = vx;
-				star_temp[Nparent+i][5] = vy;
-				star_temp[Nparent+i][6] = vz;
-				i++;
-				subi++;
-			}*/
-			/*
-			if ((drand48()<prob && Nparent+i<Ntot) || ((Nparent == 1) && (symmetry))) {
-				star_temp[Nparent+i][0] = 1.0;
-				star_temp[Nparent+i][1] = star_temp[Nparentlow][1]+l/2.0+l*scatter*get_gauss();
-				star_temp[Nparent+i][2] = star_temp[Nparentlow][2]+l/2.0+l*scatter*get_gauss();
-				star_temp[Nparent+i][3] = star_temp[Nparentlow][3]+l/2.0+l*scatter*get_gauss();
-				vx = get_gauss();
-				vy = get_gauss();
-				vz = get_gauss();
-				star_temp[Nparent+i][4] = vx;
-				star_temp[Nparent+i][5] = vy;
-				star_temp[Nparent+i][6] = vz;
-				i++;
-				subi++;
-			}*/
+			//Changes end
+			
 			//re-scaling of sub-group
 			if (subi) {
 				double vx, vy, vz;
