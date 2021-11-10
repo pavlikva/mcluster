@@ -7,7 +7,7 @@
       integer, dimension(1:10) :: npop, initmodel, imfg, pairing,
      &         adis, eigen, check_en
       integer potential_energy, tf, mclusteron, seedmc,numpop,
-     &         outputf
+     &         outputf, BSE
 
       REAL(KIND=8) qvir, rbar, zini,rh_mcl
       REAL(KIND=8), dimension(1:10) :: fracb, w0, conc_pop, Seg,
